@@ -1,6 +1,8 @@
 from django.urls import path
-from studentAPP import views
+from authAPP import views
 
 urlpatterns = [
-    path('home', views.home, name='home'),
+    path('login/', views.login, name='_login'),
+    path('creare_account/', views.create_account, name='_create_account'),
+    path('logout/', views.logout, name='_logout'),
 ]
