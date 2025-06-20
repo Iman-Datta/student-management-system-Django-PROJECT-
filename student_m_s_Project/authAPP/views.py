@@ -2,20 +2,35 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
 def login(request: HttpResponse):
-    context = {
-        'title': 'Login Page',
-        'message': 'This is the Login Page!'
-    }
-    return render(request, 'authapp/login.html', context)
-def create_account(request: HttpResponse):
+
     if request.method == 'POST':
-        context = {
-            'title': 'Create Account',
-            'message': 'Please fill in the form below to create your account.'
-        }
+        reg_num = request.POST.get('reg_num')
+        paswd = request.POST.get('paswd')
+        return render(request, 'authapp/login/login.html')
+    return render(request, 'authapp/login/login.html')
+
+def forgot_password(request: HttpResponse):
+    if request.method == 'POST':
+        dob = request.POST.get('dob')
+        email = request.POST.get('email')
+        
+        # Here you would typically handle the password reset logic
+        # For now, we just print the values to the console
+        print(f"Date of Birth: {dob}")
+        print(f"Email: {email}")
+        return render(request, 'authapp/login/forgot_password.html', {'message': 'Password reset instructions sent.'})
+    return render(request, 'authapp/login/forgot_password.html')
+
+def create_account(request: HttpResponse):
+    context = {
+    'title': 'Create Account',
+    'message': 'Please fill in the form below to create your account.'
+    }
+    if request.method == 'POST':
         first_name = request.POST.get('first_name')
         middle_name = request.POST.get('middle_name')
         last_name = request.POST.get('last_name')
+        paswd = request.post.get('paswd')
         email = request.POST.get('email')
         mobile = request.POST.get('mobile')
         father_name = request.POST.get('father_name')
@@ -43,7 +58,8 @@ def create_account(request: HttpResponse):
         print(f"Current Address: {current_address}, {current_city}, {current_state}, {current_zip}")
 
         return render(request, 'authapp/create_account.html', context)
-    return render(request, 'authapp/create_account.html')
+    return render(request, 'authapp/create_account.html', context)
+
 def logout(request: HttpResponse):
     context = {
         'title': 'Logout Page',
