@@ -6,7 +6,7 @@ def login(request: HttpResponse):
         'title': 'Login Page',
         'message': 'This is the Login Page!'
     }
-    return render(request, 'login.html', context)
+    return render(request, 'authapp/login.html', context)
 def create_account(request: HttpResponse):
     if request.method == 'POST':
         context = {
@@ -42,11 +42,11 @@ def create_account(request: HttpResponse):
         print(f"Permanent Address: {permanent_address}, {permanent_city}, {permanent_state}, {permanent_zip}")
         print(f"Current Address: {current_address}, {current_city}, {current_state}, {current_zip}")
 
-        return render(request, 'create_account.html', context)
-    return render(request, 'create_account.html')
+        return render(request, 'authapp/create_account.html', context)
+    return render(request, 'authapp/create_account.html')
 def logout(request: HttpResponse):
     context = {
         'title': 'Logout Page',
         'message': 'You have been logged out!'
     }
-    return render(request, 'logout.html', context)
+    return render(request, 'authapp/logout.html', context)

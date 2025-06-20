@@ -6,4 +6,4 @@ def home(request: HttpResponse):
         'title': 'Home Page',
         'message': 'Welcome to the Home Page!'
     }
-    return render(request, 'index.html', context)
+    return render(request, 'homeAPP/index.html', context)
