@@ -135,6 +135,12 @@
       <p class="lead" id="form-message">Welcome back! Please log in.</p>
     </div>
 
+    {% if error %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% elif success %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+
     <div class="container mt-5">
       <form
         id="login-form"

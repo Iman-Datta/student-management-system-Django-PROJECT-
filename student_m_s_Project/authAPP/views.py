@@ -1,13 +1,35 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from authAPP.models import Student
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+import random
+import string
+
+def generate_registration_number():
+    return 'REG' + ''.join(random.choices(string.digits, k=6))
+
+def generate_password(length=8):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choices(characters, k=length))
 
 def login(request: HttpResponse):
-
     if request.method == 'POST':
         reg_num = request.POST.get('reg_num')
         paswd = request.POST.get('paswd')
-        return render(request, 'authapp/login/login.html')
+        user = authenticate(request, username=reg_num, password=paswd)
+        if user is not None:
+            login(request, user)
+            return render(request, 'authapp/login/login.html', {
+                'success': True,
+                'message': f"Welcome {user.first_name}!"
+            })
+        else:
+            return render(request, 'authapp/login/login.html', {
+                'error': True,
+                'message': 'Invalid registration number or password.'
+            })
     return render(request, 'authapp/login/login.html')
 
 def forgot_password(request: HttpResponse):
@@ -28,27 +50,60 @@ def create_account(request: HttpResponse):
     'message': 'Please fill in the form below to create your account.'
     }
     if request.method == 'POST':
-        response = Student.objects.create(
-            First_Name=request.POST.get('first_name'),
-            Middle_Name=request.POST.get('middle_name'),
-            Last_Name=request.POST.get('last_name'),
-            Date_of_Birth=request.POST.get('dob'),
-            Email=request.POST.get('email'),
-            Phone_Number=request.POST.get('mobile'),
-            Father_Name=request.POST.get('father_name'),
-            Mother_Name=request.POST.get('mother_name'),
-            gardian_phone_number=int(request.POST.get('guardian_contact')),
-            permanent_address=request.POST.get('permanent_address'),
-            Permanent_city=request.POST.get('permanent_city'),
-            permanent_state=request.POST.get('permanent_state'),
-            permanent_zip=int(request.POST.get('permanent_zip')),
-            current_address=request.POST.get('current_address'),
-            Current_city=request.POST.get('current_city'),
-            current_state=request.POST.get('current_state'),
-            current_zip=int(request.POST.get('current_zip'))
+        fnm=request.POST.get('first_name')
+        mnm=request.POST.get('middle_name')
+        lnm=request.POST.get('last_name')
+        bd=request.POST.get('dob')
+        email=request.POST.get('email')
+        if User.objects.filter(email=email).exists():
+            return render(request, 'authapp/create_account.html',{
+        'error': True,
+        'message': 'An account with this email already exists.'
+    })
+        ph_num=request.POST.get('mobile')
+        father_nm=request.POST.get('father_name')
+        mother_mn=request.POST.get('mother_name')
+        gardian_ph_num=int(request.POST.get('guardian_contact'))
+        p_address=request.POST.get('permanent_address')
+        p_city=request.POST.get('permanent_city')
+        p_state=request.POST.get('permanent_state')
+        p_zip=int(request.POST.get('permanent_zip'))
+        c_address=request.POST.get('current_address')
+        c_city=request.POST.get('current_city')
+        c_state=request.POST.get('current_state')
+        c_zip=int(request.POST.get('current_zip'))
+
+        reg_number = generate_registration_number()
+        password = generate_password()
+
+        user = User.objects.create_user(
+            username=reg_number,
+            password=password,
+            email = email,
         )
-        # response.save()
-        return render(request, 'authapp/create_account.html',{'success':True, 'message':'Student added successfully'})
+
+        Student.objects.create(
+            user=user,
+            First_Name=fnm,
+            Middle_Name=mnm,
+            Last_Name=lnm,
+            Date_of_Birth=bd,
+            Email=email,
+            Phone_Number=ph_num,
+            Father_Name=father_nm,
+            Mother_Name=mother_mn,
+            gardian_phone_number=gardian_ph_num,
+            permanent_address=p_address,
+            Permanent_city=p_city,
+            permanent_state=p_state,
+            permanent_zip=p_zip,
+            current_address=c_address,
+            Current_city=c_city,
+            current_state=c_state,
+            current_zip=c_zip
+        )
+        return render(request, 'authapp/create_account.html',{'success':True, 'message':'Student added successfully','reg_number': reg_number,
+    'password': password})
     return render(request, 'authapp/create_account.html', context)
 
 def logout(request: HttpResponse):
@@ -56,4 +111,7 @@ def logout(request: HttpResponse):
         'title': 'Logout Page',
         'message': 'You have been logged out!'
     }
-    return render(request, 'authapp/logout.html', context)
+    logout(request)
+    return render(request, 'authapp/logout.html', {
+        'message': 'You have been logged out!'
+    })
