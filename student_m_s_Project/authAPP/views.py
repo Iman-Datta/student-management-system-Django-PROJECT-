@@ -4,6 +4,7 @@ from authAPP.models import Student
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
+from django.contrib import messages
 import random
 import string
 
@@ -24,15 +25,20 @@ def login_view(request: HttpResponse):
 
         if user is not None:
             auth_login(request, user)
-            return render(request, 'authapp/login/login.html', {
-                'success': True,
-                'message': f"Welcome {user.first_name}!"
-            })
+            # context = {
+            #     'success': True,
+            #     'message': f"Welcome {user.first_name}!"
+            # }
+            # return render(request, 'authapp/login/login.html', context)/
+            messages.success(request, f"Welcome {user.first_name}, you have successfully logged in!")
+            return redirect ('_home')
         else:
-            return render(request, 'authapp/login/login.html', {
-                'error': True,
-                'message': 'Invalid registration number or password.'
-            })
+            # return render(request, 'authapp/login/login.html', {
+            #     'error': True,
+            #     'message': 'Invalid registration number or password.'
+            # })
+            messages.error(request,"Invalid registration number or password.")
+            return redirect('_login')
     return render(request, 'authapp/login/login.html')
 
 def forgot_password(request: HttpResponse):
