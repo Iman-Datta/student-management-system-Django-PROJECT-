@@ -266,18 +266,14 @@
             id="current_zip"
             name="current_zip" />
         </div>
-
-        <div class="col-12">
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              id="gridCheck"
-              name="terms" />
-            <label class="form-check-label" for="gridCheck">
-              Check me out
-            </label>
-          </div>
+        <div class="mb-3">
+          <label for="user_password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Enter your password" />
         </div>
 
         <div class="col-12">
@@ -295,11 +291,16 @@
     </div>
     {% if success == True %}
     <div class="alert alert-success">{{ message }}</div>
-    <div class="alert alert-success">,<h3>Your registration number is:{{reg_number}} </h3></div>
-    <div class="alert alert-success">,<h3>Your password is:{{password}} </h3></div>
-    
-    {% endif %}
-    {% if error == True %}
+    <div class="alert alert-success">
+      ,
+      <h3>Your registration number is:{{reg_number}}</h3>
+    </div>
+    <div class="alert alert-success">
+      ,
+      <h3>Your password is:{{password}}</h3>
+    </div>
+
+    {% endif %} {% if error == True %}
     <div class="alert alert-danger">error</div>
     {% endif %}
 

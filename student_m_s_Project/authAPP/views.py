@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from authAPP.models import Student
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
 import random
 import string
@@ -14,13 +14,16 @@ def generate_password(length=8):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choices(characters, k=length))
 
-def login(request: HttpResponse):
+def login_view(request: HttpResponse):
     if request.method == 'POST':
-        reg_num = request.POST.get('reg_num')
-        paswd = request.POST.get('paswd')
+        reg_num = request.POST.get('reg_number')
+        paswd = request.POST.get('password')
+        print("Trying to log in with:", reg_num, paswd)
         user = authenticate(request, username=reg_num, password=paswd)
+        print("Authenticated user:", user)
+
         if user is not None:
-            login(request, user)
+            auth_login(request, user)
             return render(request, 'authapp/login/login.html', {
                 'success': True,
                 'message': f"Welcome {user.first_name}!"
@@ -74,12 +77,15 @@ def create_account(request: HttpResponse):
         c_zip=int(request.POST.get('current_zip'))
 
         reg_number = generate_registration_number()
-        password = generate_password()
+        # password = generate_password()
+        password = request.POST.get('password')
 
         user = User.objects.create_user(
             username=reg_number,
             password=password,
             email = email,
+            first_name=fnm,
+            last_name=lnm
         )
 
         Student.objects.create(
@@ -106,7 +112,7 @@ def create_account(request: HttpResponse):
     'password': password})
     return render(request, 'authapp/create_account.html', context)
 
-def logout(request: HttpResponse):
+def logout_view(request: HttpResponse):
     context = {
         'title': 'Logout Page',
         'message': 'You have been logged out!'
