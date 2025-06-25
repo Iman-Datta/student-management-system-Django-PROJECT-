@@ -19,9 +19,9 @@ def login_view(request: HttpResponse):
     if request.method == 'POST':
         reg_num = request.POST.get('reg_number')
         paswd = request.POST.get('password')
-        print("Trying to log in with:", reg_num, paswd)
+        # print("Trying to log in with:", reg_num, paswd)
         user = authenticate(request, username=reg_num, password=paswd)
-        print("Authenticated user:", user)
+        # print("Authenticated user:", user)
 
         if user is not None:
             auth_login(request, user)
@@ -63,8 +63,8 @@ def create_account(request: HttpResponse):
         mnm=request.POST.get('middle_name')
         lnm=request.POST.get('last_name')
         bd=request.POST.get('dob')
-        email=request.POST.get('email')
-        if User.objects.filter(email=email).exists():
+        user_email=request.POST.get('email')
+        if User.objects.filter(email=user_email).exists(): # filtering user by email
             return render(request, 'authapp/create_account.html',{
         'error': True,
         'message': 'An account with this email already exists.'
@@ -86,21 +86,21 @@ def create_account(request: HttpResponse):
         # password = generate_password()
         password = request.POST.get('password')
 
-        user = User.objects.create_user(
+        user = User.objects.create_user( # Create a new user for auth system
             username=reg_number,
             password=password,
-            email = email,
+            email = user_email,
             first_name=fnm,
             last_name=lnm
         )
 
-        Student.objects.create(
+        Student.objects.create( # Create a new student record in the Student model(coustom model created by me)
             user=user,
             First_Name=fnm,
             Middle_Name=mnm,
             Last_Name=lnm,
             Date_of_Birth=bd,
-            Email=email,
+            Email=user_email,
             Phone_Number=ph_num,
             Father_Name=father_nm,
             Mother_Name=mother_mn,
@@ -119,11 +119,6 @@ def create_account(request: HttpResponse):
     return render(request, 'authapp/create_account.html', context)
 
 def logout_view(request: HttpResponse):
-    context = {
-        'title': 'Logout Page',
-        'message': 'You have been logged out!'
-    }
     logout(request)
-    return render(request, 'authapp/logout.html', {
-        'message': 'You have been logged out!'
-    })
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('_home')

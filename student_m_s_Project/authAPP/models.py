@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE) # Link to built-in User model
+    user = models.OneToOneField(User, on_delete=models.CASCADE) # Link to built-in User model {One-to-One relationship}
 
     First_Name = models.CharField(max_length=100)
     Middle_Name = models.CharField(max_length=100, blank=True, null=True)
