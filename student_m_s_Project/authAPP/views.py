@@ -1,10 +1,10 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from authAPP.models import Student
-from django.contrib.auth.hashers import make_password
+from studentAPP.models import Student
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.models import Group
 import random
 import string
 
@@ -19,24 +19,13 @@ def login_view(request: HttpResponse):
     if request.method == 'POST':
         reg_num = request.POST.get('reg_number')
         paswd = request.POST.get('password')
-        # print("Trying to log in with:", reg_num, paswd)
         user = authenticate(request, username=reg_num, password=paswd)
-        # print("Authenticated user:", user)
 
         if user is not None:
             auth_login(request, user)
-            # context = {
-            #     'success': True,
-            #     'message': f"Welcome {user.first_name}!"
-            # }
-            # return render(request, 'authapp/login/login.html', context)/
             messages.success(request, f"Welcome {user.first_name}, you have successfully logged in!")
-            return redirect ('_home')
+            return redirect ('_after_login')
         else:
-            # return render(request, 'authapp/login/login.html', {
-            #     'error': True,
-            #     'message': 'Invalid registration number or password.'
-            # })
             messages.error(request,"Invalid registration number or password.")
             return redirect('_login')
     return render(request, 'authapp/login/login.html')
@@ -62,6 +51,7 @@ def create_account(request: HttpResponse):
         fnm=request.POST.get('first_name')
         mnm=request.POST.get('middle_name')
         lnm=request.POST.get('last_name')
+        role = request.POST.get('role')
         bd=request.POST.get('dob')
         user_email=request.POST.get('email')
         if User.objects.filter(email=user_email).exists(): # filtering user by email
@@ -81,10 +71,8 @@ def create_account(request: HttpResponse):
         c_city=request.POST.get('current_city')
         c_state=request.POST.get('current_state')
         c_zip=int(request.POST.get('current_zip'))
-
-        reg_number = generate_registration_number()
-        # password = generate_password()
         password = request.POST.get('password')
+        reg_number = generate_registration_number()
 
         user = User.objects.create_user( # Create a new user for auth system
             username=reg_number,
