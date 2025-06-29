@@ -1,19 +1,128 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from studentAPP.models import Student
+from teacherAPP.models import Teacher
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
-from django.contrib import messages
 from django.contrib.auth.models import Group
-import random
-import string
+from django.contrib import messages
+from .utils import generate_registration_number, generate_password
 
-def generate_registration_number():
-    return 'REG' + ''.join(random.choices(string.digits, k=6))
 
-def generate_password(length=8):
-    characters = string.ascii_letters + string.digits
-    return ''.join(random.choices(characters, k=length))
+def registration(request: HttpResponse):
+    context = {
+        'title': 'Create Account',
+        'message': 'Please fill in the form below to registrater.'
+    }
+
+    if request.method == 'POST':
+        fnm = request.POST.get('first_name')
+        mnm = request.POST.get('middle_name')
+        lnm = request.POST.get('last_name')
+        user_email = request.POST.get('email')
+        role = request.POST.get('role')
+        password = request.POST.get('password')
+
+        if User.objects.filter(email=user_email).exists():
+            return render(request, 'authapp/create_account.html', {
+                'error': True,
+                'message': 'An account with this email already exists.'
+            })
+
+        if role == 'student':
+            reg_number = generate_registration_number()
+            user = User.objects.create_user(
+                username=reg_number, # Username is set to registration number for students
+                password=password,
+                email=user_email,
+                first_name=fnm,
+                midle_name=mnm,
+                last_name=lnm
+            )
+
+            group = Group.objects.get(name='Student')
+            user.groups.add(group)
+
+            # Student-specific data
+            bd = request.POST.get('dob')
+            ph_num = request.POST.get('mobile')
+            father_nm = request.POST.get('father_name')
+            mother_mn = request.POST.get('mother_name')
+            gardian_ph_num = int(request.POST.get('guardian_contact'))
+            p_address = request.POST.get('permanent_address')
+            p_city = request.POST.get('permanent_city')
+            p_state = request.POST.get('permanent_state')
+            p_zip = int(request.POST.get('permanent_zip'))
+            c_address = request.POST.get('current_address')
+            c_city = request.POST.get('current_city')
+            c_state = request.POST.get('current_state')
+            c_zip = int(request.POST.get('current_zip'))
+
+            Student.objects.create(
+                user=user,
+                First_Name=fnm,
+                Middle_Name=mnm,
+                Last_Name=lnm,
+                Date_of_Birth=bd,
+                Email=user_email,
+                Phone_Number=ph_num,
+                Father_Name=father_nm,
+                Mother_Name=mother_mn,
+                gardian_phone_number=gardian_ph_num,
+                permanent_address=p_address,
+                Permanent_city=p_city,
+                permanent_state=p_state,
+                permanent_zip=p_zip,
+                current_address=c_address,
+                Current_city=c_city,
+                current_state=c_state,
+                current_zip=c_zip
+            )
+
+            return render(request, 'authapp/create_account.html', {
+                'success': True,
+                'message': f'Student {fnm} added successfully',
+                'reg_number': reg_number,
+                'password': password
+            })
+
+        elif role == 'teacher':
+            # Teacher-specific data
+            department = request.POST.get('department')
+            Subject_Specialization = request.POST.get('subject_specialization')
+            proof_document_upload = request.FILES.get('proof_document_upload')  # Corrected
+            gender = request.POST.get('gender')
+
+            user = User.objects.create_user(
+                username=user_email,
+                password=password,
+                email=user_email,
+                first_name=fnm,
+                midle_name=mnm,
+                last_name=lnm
+            )
+
+            group = Group.objects.get(name='Teacher')
+            user.groups.add(group)
+
+            Teacher.objects.create(
+                user=user,
+                first_name=fnm,
+                middle_name=mnm,
+                last_name=lnm,
+                email=user_email,
+                department=department,
+                subject_specialization=Subject_Specialization,
+                proof_document_upload=proof_document_upload,
+                gender=gender
+            )
+
+            return render(request, 'authapp/create_account.html', {
+                'success': True,
+                'message': f'Teacher {fnm} added successfully'
+            })
+
+    return render(request, 'authapp/create_account.html', context)
 
 def login_view(request: HttpResponse):
     if request.method == 'POST':
@@ -42,69 +151,17 @@ def forgot_password(request: HttpResponse):
         return render(request, 'authapp/login/forgot_password.html', {'message': 'Password reset instructions sent.'})
     return render(request, 'authapp/login/forgot_password.html')
 
-def create_account(request: HttpResponse):
-    context = {
-    'title': 'Create Account',
-    'message': 'Please fill in the form below to create your account.'
-    }
+def role(request: HttpResponse):
     if request.method == 'POST':
-        fnm=request.POST.get('first_name')
-        mnm=request.POST.get('middle_name')
-        lnm=request.POST.get('last_name')
         role = request.POST.get('role')
-        bd=request.POST.get('dob')
-        user_email=request.POST.get('email')
-        if User.objects.filter(email=user_email).exists(): # filtering user by email
-            return render(request, 'authapp/create_account.html',{
-        'error': True,
-        'message': 'An account with this email already exists.'
-    })
-        ph_num=request.POST.get('mobile')
-        father_nm=request.POST.get('father_name')
-        mother_mn=request.POST.get('mother_name')
-        gardian_ph_num=int(request.POST.get('guardian_contact'))
-        p_address=request.POST.get('permanent_address')
-        p_city=request.POST.get('permanent_city')
-        p_state=request.POST.get('permanent_state')
-        p_zip=int(request.POST.get('permanent_zip'))
-        c_address=request.POST.get('current_address')
-        c_city=request.POST.get('current_city')
-        c_state=request.POST.get('current_state')
-        c_zip=int(request.POST.get('current_zip'))
-        password = request.POST.get('password')
-        reg_number = generate_registration_number()
-
-        user = User.objects.create_user( # Create a new user for auth system
-            username=reg_number,
-            password=password,
-            email = user_email,
-            first_name=fnm,
-            last_name=lnm
-        )
-
-        Student.objects.create( # Create a new student record in the Student model(coustom model created by me)
-            user=user,
-            First_Name=fnm,
-            Middle_Name=mnm,
-            Last_Name=lnm,
-            Date_of_Birth=bd,
-            Email=user_email,
-            Phone_Number=ph_num,
-            Father_Name=father_nm,
-            Mother_Name=mother_mn,
-            gardian_phone_number=gardian_ph_num,
-            permanent_address=p_address,
-            Permanent_city=p_city,
-            permanent_state=p_state,
-            permanent_zip=p_zip,
-            current_address=c_address,
-            Current_city=c_city,
-            current_state=c_state,
-            current_zip=c_zip
-        )
-        return render(request, 'authapp/create_account.html',{'success':True, 'message':'Student added successfully','reg_number': reg_number,
-    'password': password})
-    return render(request, 'authapp/create_account.html', context)
+        if role == 'student':
+            return redirect('_student_login')
+        elif role == 'teacher':
+            return redirect('_teacher_login')
+        else:
+            messages.error(request, "Invalid role selected.")
+            return redirect('_home')
+    return render(request, 'authapp/role.html')
 
 def logout_view(request: HttpResponse):
     logout(request)

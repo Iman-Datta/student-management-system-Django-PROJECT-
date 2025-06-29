@@ -24,13 +24,3 @@ class Student(models.Model):
 
     def save(self, *args, **kwargs ):
         return super().save(*args, **kwargs)
-
-class Marksheet(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE) # many to one relationship with Student
-    subject = models.CharField(max_length=100)
-    marks = models.IntegerField()
-    exam_date = models.DateField()
-    grade = models.CharField(max_length=2)
-
-    def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
