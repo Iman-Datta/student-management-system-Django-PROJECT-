@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from .utils import generate_registration_number, generate_password
+from django.core.mail import send_mail
+
 
 
 def registration(request: HttpResponse):
@@ -18,7 +20,7 @@ def registration(request: HttpResponse):
     if request.method == 'POST':
         # Common input for all user
         fnm = request.POST.get('first_name')
-        mnm = request.POST.get('middle_name')
+        # mnm = request.POST.get('middle_name')
         lnm = request.POST.get('last_name')
         user_email = request.POST.get('email')
         role = request.POST.get('role')
@@ -37,7 +39,7 @@ def registration(request: HttpResponse):
                 password=password,
                 email=user_email,
                 first_name=fnm,
-                midle_name=mnm,
+                # midle_name=mnm,
                 last_name=lnm
             )
 
@@ -62,7 +64,7 @@ def registration(request: HttpResponse):
             Student.objects.create(
                 user=user,
                 First_Name=fnm,
-                Middle_Name=mnm,
+                # Middle_Name=mnm,
                 Last_Name=lnm,
                 Date_of_Birth=bd,
                 Email=user_email,
@@ -79,6 +81,22 @@ def registration(request: HttpResponse):
                 current_state=c_state,
                 current_zip=c_zip
             )
+
+                # ✅ Send email before return
+            send_mail(
+                subject='Account Registration Confirmation',
+                message=(
+                    f'Dear {fnm},\n\n'
+                    f'Your student account has been successfully created.\n'
+                    f'Username (Reg No): {user.username}\n'
+                    f'Password: {password}\n\n'
+                    f'Please keep this information safe.\n\n'
+                    f'Thank you!'
+                ),
+                from_email='dattaiman56@gmail.com',
+                recipient_list=[user_email],
+                fail_silently=False,
+                )
 
             return render(request, 'authapp/create_account.html', {
                 'success': True,
@@ -99,7 +117,7 @@ def registration(request: HttpResponse):
                 password=password,
                 email=user_email,
                 first_name=fnm,
-                midle_name=mnm,
+                # midle_name=mnm,
                 last_name=lnm
             )
 
@@ -109,7 +127,7 @@ def registration(request: HttpResponse):
             Teacher.objects.create(
                 user=user,
                 first_name=fnm,
-                middle_name=mnm,
+                # middle_name=mnm,
                 last_name=lnm,
                 email=user_email,
                 department=department,
@@ -118,11 +136,24 @@ def registration(request: HttpResponse):
                 gender=gender
             )
 
+            send_mail(
+                subject='Account Registration Confirmation',
+                message=(
+                    f'Dear {fnm},\n\n'
+                    f'Your teacher account has been successfully created.\n'
+                    f'Username: {user.username}\n'
+                    f'Password: {password}\n\n'
+                    f'Please keep this information safe.\n\n'
+                    f'Thank you!'
+                ),
+                from_email='dattaiman56@gmail.com',
+                recipient_list=[user_email],
+                fail_silently=False,
+                )
             return render(request, 'authapp/create_account.html', {
                 'success': True,
                 'message': f'Teacher {fnm} added successfully'
             })
-
     return render(request, 'authapp/create_account.html', context)
 
 def login_view(request: HttpResponse):
