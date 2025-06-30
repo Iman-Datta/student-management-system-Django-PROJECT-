@@ -16,6 +16,7 @@ def registration(request: HttpResponse):
     }
 
     if request.method == 'POST':
+        # Common input for all user
         fnm = request.POST.get('first_name')
         mnm = request.POST.get('middle_name')
         lnm = request.POST.get('last_name')
@@ -40,8 +41,8 @@ def registration(request: HttpResponse):
                 last_name=lnm
             )
 
-            group = Group.objects.get(name='Student')
-            user.groups.add(group)
+            group = Group.objects.get(name='Student') # Call the student group from model
+            user.groups.add(group) # Add the user to the group
 
             # Student-specific data
             bd = request.POST.get('dob')
@@ -128,6 +129,7 @@ def login_view(request: HttpResponse):
     if request.method == 'POST':
         reg_num = request.POST.get('reg_number')
         paswd = request.POST.get('password')
+        
         user = authenticate(request, username=reg_num, password=paswd)
 
         if user is not None:
@@ -150,18 +152,6 @@ def forgot_password(request: HttpResponse):
         print(f"Email: {email}")
         return render(request, 'authapp/login/forgot_password.html', {'message': 'Password reset instructions sent.'})
     return render(request, 'authapp/login/forgot_password.html')
-
-def role(request: HttpResponse):
-    if request.method == 'POST':
-        role = request.POST.get('role')
-        if role == 'student':
-            return redirect('_student_login')
-        elif role == 'teacher':
-            return redirect('_teacher_login')
-        else:
-            messages.error(request, "Invalid role selected.")
-            return redirect('_home')
-    return render(request, 'authapp/role.html')
 
 def logout_view(request: HttpResponse):
     logout(request)
