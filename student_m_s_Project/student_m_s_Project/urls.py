@@ -5,5 +5,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('homeAPP.urls')),
     path('student/', include('studentAPP.urls')),
-    path('auth/', include('authAPP.urls'))
+    path('auth/', include('authAPP.urls')),
+    path('teacher/', include('teacherAPP.urls')),
+    path('result/', include('resultAPP.urls')),
 ]

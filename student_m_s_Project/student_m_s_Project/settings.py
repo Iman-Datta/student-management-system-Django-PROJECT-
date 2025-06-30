@@ -30,7 +30,9 @@ INSTALLED_APPS = [
     # My custom apps
     'authAPP.apps.AuthappConfig',
     'studentAPP.apps.StudentappConfig',
-    'homeAPP.apps.HomeappConfig'
+    'homeAPP.apps.HomeappConfig',
+    'teacherAPP.apps.TeacherappConfig',
+    'resultAPP.apps.ResultappConfig',
 ]
 
 MIDDLEWARE = [

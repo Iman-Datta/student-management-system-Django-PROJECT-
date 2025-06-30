@@ -1,6 +1,7 @@
 from django.db import models
 from studentAPP.models import Student
 
+
 class Marksheet(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE) # many to one relationship with Student
     subject = models.CharField(max_length=100)
