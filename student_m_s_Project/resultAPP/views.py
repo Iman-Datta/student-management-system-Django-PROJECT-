@@ -42,8 +42,6 @@ def add_result(request: HttpResponse):
             return redirect('_view_result')
     return render(request, 'result.html')
 
-
-
 @login_required
 def view_result(request: HttpResponse):
     if is_teacher(user=request.user):
