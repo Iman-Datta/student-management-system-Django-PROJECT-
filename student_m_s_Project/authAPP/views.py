@@ -1,7 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from studentAPP.models import Student
-from teacherAPP.models import Teacher
+from authAPP.models import Student, Teacher
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
@@ -20,7 +19,6 @@ def registration(request: HttpResponse):
     if request.method == 'POST':
         # Common input for all user
         fnm = request.POST.get('first_name')
-        # mnm = request.POST.get('middle_name')
         lnm = request.POST.get('last_name')
         user_email = request.POST.get('email')
         role = request.POST.get('role')
@@ -64,7 +62,6 @@ def registration(request: HttpResponse):
             Student.objects.create(
                 user=user,
                 First_Name=fnm,
-                # Middle_Name=mnm,
                 Last_Name=lnm,
                 Date_of_Birth=bd,
                 Email=user_email,
@@ -109,7 +106,6 @@ def registration(request: HttpResponse):
             # Teacher-specific data
             department = request.POST.get('department')
             Subject_Specialization = request.POST.get('subject_specialization')
-            proof_document_upload = request.FILES.get('proof_document_upload')  # Corrected
             gender = request.POST.get('gender')
 
             user = User.objects.create_user(
@@ -117,7 +113,6 @@ def registration(request: HttpResponse):
                 password=password,
                 email=user_email,
                 first_name=fnm,
-                # midle_name=mnm,
                 last_name=lnm
             )
 
@@ -127,12 +122,10 @@ def registration(request: HttpResponse):
             Teacher.objects.create(
                 user=user,
                 first_name=fnm,
-                # middle_name=mnm,
                 last_name=lnm,
                 email=user_email,
                 department=department,
                 subject_specialization=Subject_Specialization,
-                proof_document_upload=proof_document_upload,
                 gender=gender
             )
 
