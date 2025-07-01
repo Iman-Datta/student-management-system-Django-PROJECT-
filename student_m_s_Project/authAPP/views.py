@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from .utils import generate_registration_number, generate_password
+from utils import generate_registration_number, generate_password
 from django.core.mail import send_mail
 
 
@@ -21,15 +21,15 @@ def registration(request: HttpResponse):
         fnm = request.POST.get('first_name')
         lnm = request.POST.get('last_name')
         user_email = request.POST.get('email')
-        role = request.POST.get('role')
         password = request.POST.get('password')
+        role = request.POST.get('role')
 
         if User.objects.filter(email=user_email).exists():
-            return render(request, 'authapp/create_account.html', {
+            return render(request, 'registration.html', {
                 'error': True,
                 'message': 'An account with this email already exists.'
             })
-
+ 
         if role == 'student':
             reg_number = generate_registration_number()
             user = User.objects.create_user(
@@ -37,7 +37,6 @@ def registration(request: HttpResponse):
                 password=password,
                 email=user_email,
                 first_name=fnm,
-                # midle_name=mnm,
                 last_name=lnm
             )
 
@@ -79,7 +78,7 @@ def registration(request: HttpResponse):
                 current_zip=c_zip
             )
 
-                # ✅ Send email before return
+                #  Send email before return
             send_mail(
                 subject='Account Registration Confirmation',
                 message=(
@@ -95,7 +94,7 @@ def registration(request: HttpResponse):
                 fail_silently=False,
                 )
 
-            return render(request, 'authapp/create_account.html', {
+            return render(request, 'registration.html', {
                 'success': True,
                 'message': f'Student {fnm} added successfully',
                 'reg_number': reg_number,
@@ -106,6 +105,7 @@ def registration(request: HttpResponse):
             # Teacher-specific data
             department = request.POST.get('department')
             Subject_Specialization = request.POST.get('subject_specialization')
+            mob_no = request.POST.get('mob')
             gender = request.POST.get('gender')
 
             user = User.objects.create_user(
@@ -120,13 +120,10 @@ def registration(request: HttpResponse):
             user.groups.add(group)
 
             Teacher.objects.create(
-                user=user,
-                first_name=fnm,
-                last_name=lnm,
-                email=user_email,
                 department=department,
                 subject_specialization=Subject_Specialization,
-                gender=gender
+                mobile_number = mob_no,
+                gender=gender,
             )
 
             send_mail(
@@ -147,7 +144,7 @@ def registration(request: HttpResponse):
                 'success': True,
                 'message': f'Teacher {fnm} added successfully'
             })
-    return render(request, 'authapp/create_account.html', context)
+    return render(request, 'registration.html', context)
 
 def login_view(request: HttpResponse):
     if request.method == 'POST':

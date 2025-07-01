@@ -1,5 +1,5 @@
 from django.db import models
-from studentAPP.models import Student
+from authAPP.models import Student
 
 
 class Marksheet(models.Model):

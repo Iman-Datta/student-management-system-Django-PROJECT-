@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from resultAPP.models import Marksheet
-from authAPP.utils import is_student, is_teacher
-from studentAPP.models import Student
+from utils import is_student, is_teacher
+from authAPP.models import Student
 
 @login_required
 def add_result(request: HttpResponse):
