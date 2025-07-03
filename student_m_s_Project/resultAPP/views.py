@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from resultAPP.models import Marksheet
 from utils import is_student, is_teacher
-from authAPP.models import Student
+from authAPP.models import Student, Teacher
 
 @login_required
 def add_result(request: HttpResponse):
@@ -18,6 +18,10 @@ def add_result(request: HttpResponse):
             total_marks = request.POST.get('total_marks')
             marks = request.POST.get('marks')
             # Get teacher's subject from their profile
+            print(f"Reg no. - {reg_num}\n")
+            print(f"Exam date - {exam_date}")
+            print(f"Total marks - {total_marks}")
+            print(f"mark - {marks}")
             try:
                 teacher = request.user.teacher
                 subject = teacher.subject_specialization.strip()
