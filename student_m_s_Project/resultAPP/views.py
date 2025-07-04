@@ -24,10 +24,7 @@ def add_result(request: HttpResponse):
             reg_num = request.POST.get('reg_num')
             print("Submitted reg number:", reg_num)
             try:
-                # for s in Student.objects.all():
-                    # print("Existing student username:", s.user.username)
                 student = Student.objects.get(user__username=reg_num)
-                # print(student)
             except Student.DoesNotExist:
                 messages.error(request, 'Invalid registration number.')
                 return redirect('_add_result')
