@@ -3,8 +3,6 @@ from resultAPP import views
 
 
 urlpatterns = [
-    path('add-result/', views.add_result, name='_add_result'),
-    path('view-result', views.view_result, name='_view_result')
-    # path('view-result/', views3.view_result, name='_view_result'),
-    # path('update-result/', views3.update_result, name='_update_result'),
+    path('add-result/', views.result, name='_result'),
+    path('results/view/', views.student_result_view, name='_student_result_view'),
 ]

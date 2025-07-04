@@ -1,3 +1,5 @@
+{% load group_filters %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -12,7 +14,7 @@
   <body>
     <div class="container mt-5">
       <!-- Title -->
-      <h2 class="text-center mb-4">Add Student Result</h2>
+      <h2 class="text-center mb-4">{{title}}</h2>
 
       <!-- Display Messages -->
       {% if messages %} {% for message in messages %}
@@ -27,7 +29,7 @@
           aria-label="Close"></button>
       </div>
       {% endfor %} {% endif %}
-
+      {% if request.user|has_group:"Teacher" %}
       <!-- Add Result Toggle Button -->
       <div class="text-end mb-3">
         <button
@@ -45,7 +47,7 @@
       <div class="collapse" id="addResultForm">
         <form
           method="POST"
-          action="{% url '_add_result' %}"
+          action="{% url '_result' %}"
           class="shadow p-4 rounded bg-light">
           {% csrf_token %}
           <div class="mb-3">
@@ -100,10 +102,17 @@
           </div>
         </form>
       </div>
+      {% endif %}
 
       <br />
-
+      {% if marksheets %}
+      {% if request.user|has_group:"Teacher" %}
       <h4>All Students' Results ({{ marksheets.count }})</h4>
+      {% endif %}
+
+      {% if request.user|has_group:"Student" %}
+      <h4>Your Result</h4>
+      {% endif %}
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -120,7 +129,8 @@
           {% for sheet in marksheets %}
           <tr>
             <td>
-              {{ sheet.student.user.first_name }} {{sheet.student.user.last_name}}
+              {{ sheet.student.user.first_name }}
+              {{sheet.student.user.last_name}}
             </td>
             <td>{{ sheet.subject }}</td>
             <td>{{ sheet.marks }}</td>
@@ -132,6 +142,9 @@
           {% endfor %}
         </tbody>
       </table>
+      {% else %}
+      <p class="text-center text-muted">No result data available.</p>
+      {% endif %}
     </div>
 
     <!-- Bootstrap JS (optional for alert dismissal) -->
