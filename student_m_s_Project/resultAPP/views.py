@@ -13,14 +13,14 @@ def add_result(request: HttpResponse):
         user = request.user
         if is_student(user):
             messages.error(request, 'Access denied')
-            return redirect ('home')
+            return redirect ('_home')
         if is_teacher(user):
             try:
                 teacher_profile = Teacher.objects.get(user=request.user) # teacher = request.user.teacher                
                 subject = teacher_profile.subject_specialization.strip()
             except:
                 messages.error(request, 'Teacher profile not found or subject not set.')
-                return redirect('home')
+                return redirect('_home')
             reg_num = request.POST.get('reg_num')
             print("Submitted reg number:", reg_num)
             try:
@@ -42,11 +42,19 @@ def add_result(request: HttpResponse):
                 total_marks=int(total_marks),
                 exam_date=exam_date
             )
-
             messages.success(request, f"Results added for student: {student.user.first_name}")
-            return redirect('_view_result')
+
+            # Showing result
+            try:
+                teacher_profile = request.user.teacher
+                teacher_subject = teacher_profile.subject_specialization.strip()
+            except Teacher.DoesNotExist:
+                messages.error(request, 'Teacher profile not found or subject not set.')
+                return redirect('home')
+            marksheet = Marksheet.objects.filter(subject__iexact = teacher_subject) # Case-insensitive filter
+            return render(request, 'resultAPP/add_result.html', {'marksheet': marksheet})
     else:
-        return render(request, 'add_result.html', {'marksheets': marksheets, 'title': 'Add Result'})
+        return render(request, 'resultAPP/add_result.html', {'marksheets': marksheets, 'title': 'Add Result'})
     
 @login_required
 def view_result(request: HttpResponse):
@@ -59,7 +67,7 @@ def view_result(request: HttpResponse):
                 messages.error(request, 'Student profile not found or subject not set.')
                 return redirect('home')
             marksheet = Marksheet.objects.filter(student=student_profile)
-            return render(request, 'view_result.html', {'marksheet': marksheet})
+            return render(request, 'resultAPP/view_result.html', {'marksheet': marksheet})
         elif is_teacher(user):
             try:
                 teacher_profile = request.user.teacher
@@ -68,8 +76,8 @@ def view_result(request: HttpResponse):
                 messages.error(request, 'Teacher profile not found or subject not set.')
                 return redirect('home')
             marksheet = Marksheet.objects.filter(subject__iexact = teacher_subject) # Case-insensitive filter
-            return render(request, 'view_result.html', {'marksheet': marksheet})
+            return render(request, 'resultAPP/view_result.html', {'marksheet': marksheet})
         else:
             messages.error(request, 'Access denied')
             return redirect('home')
-    return render (request, 'view_result.html')
+    return render (request, 'resultAPP/view_result.html')

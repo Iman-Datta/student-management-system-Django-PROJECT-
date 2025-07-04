@@ -90,7 +90,7 @@ def registration(request: HttpResponse):
                 fail_silently=False,
                 )
 
-            return render(request, 'registration.html', {
+            return render(request, 'homeAPP/index.html', {
                 'success': True,
                 'message': f'Student {fnm} added successfully',
                 'reg_number': reg_number,
@@ -137,7 +137,7 @@ def registration(request: HttpResponse):
                 recipient_list=[user_email],
                 fail_silently=False,
                 )
-            return render(request, 'authapp/create_account.html', {
+            return render(request, 'homeAPP/index.html', {
                 'success': True,
                 'message': f'Teacher {fnm} added successfully'
             })
@@ -153,7 +153,7 @@ def login_view(request: HttpResponse):
         if user is not None:
             auth_login(request, user)
             messages.success(request, f"Welcome {user.first_name}, you have successfully logged in!")
-            return redirect ('_after_login')
+            return redirect ('_home')
         else:
             messages.error(request,"Invalid registration number or password.")
             return redirect('_login')
