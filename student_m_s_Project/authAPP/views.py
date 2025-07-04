@@ -52,33 +52,29 @@ def registration(request: HttpResponse):
             p_address = request.POST.get('permanent_address')
             p_city = request.POST.get('permanent_city')
             p_state = request.POST.get('permanent_state')
-            p_zip = int(request.POST.get('permanent_zip'))
+            p_zip = (request.POST.get('permanent_zip'))
             c_address = request.POST.get('current_address')
             c_city = request.POST.get('current_city')
             c_state = request.POST.get('current_state')
-            c_zip = int(request.POST.get('current_zip'))
+            c_zip = (request.POST.get('current_zip'))
 
             Student.objects.create(
                 user=user,
-                First_Name=fnm,
-                Last_Name=lnm,
-                Date_of_Birth=bd,
-                Email=user_email,
-                Phone_Number=ph_num,
-                Father_Name=father_nm,
-                Mother_Name=mother_mn,
+                date_of_birth=bd,
+                phone_number=ph_num,
+                father_name=father_nm,
+                mother_name=mother_mn,
                 gardian_phone_number=gardian_ph_num,
                 permanent_address=p_address,
-                Permanent_city=p_city,
+                permanent_city=p_city,
                 permanent_state=p_state,
                 permanent_zip=p_zip,
                 current_address=c_address,
-                Current_city=c_city,
+                current_city=c_city,
                 current_state=c_state,
-                current_zip=c_zip
-            )
+                current_zip=c_zip)
 
-                #  Send email before return
+            #  Send email before return
             send_mail(
                 subject='Account Registration Confirmation',
                 message=(
@@ -120,6 +116,7 @@ def registration(request: HttpResponse):
             user.groups.add(group)
 
             Teacher.objects.create(
+                user=user,  
                 department=department,
                 subject_specialization=Subject_Specialization,
                 mobile_number = mob_no,

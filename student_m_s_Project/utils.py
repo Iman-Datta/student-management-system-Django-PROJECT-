@@ -1,5 +1,6 @@
 import random
 import string
+from authAPP.models import Teacher, Student
 
 def generate_registration_number():
     return 'REG' + ''.join(random.choices(string.digits, k=6))
@@ -9,7 +10,8 @@ def generate_password(length=8):
     return ''.join(random.choices(characters, k=length))
 
 def is_student(user):
-    return user.groups.filter(name='Student').exists()
+    return Student.objects.filter(user=user).exists()
 
 def is_teacher(user):
-    return user.groups.filter(name='Teacher').exists()
+    return Teacher.objects.filter(user=user).exists()
+
