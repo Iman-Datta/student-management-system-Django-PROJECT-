@@ -28,8 +28,7 @@
           data-bs-dismiss="alert"
           aria-label="Close"></button>
       </div>
-      {% endfor %} {% endif %}
-      {% if request.user|has_group:"Teacher" %}
+      {% endfor %} {% endif %} {% if request.user|has_group:"Teacher" %}
       <!-- Add Result Toggle Button -->
       <div class="text-end mb-3">
         <button
@@ -97,7 +96,7 @@
               required />
           </div>
 
-          <div class="d-grid">
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <button type="submit" class="btn btn-primary">Submit Result</button>
           </div>
         </form>
@@ -105,46 +104,78 @@
       {% endif %}
 
       <br />
-      {% if marksheets %}
-      {% if request.user|has_group:"Teacher" %}
-      <h4>All Students' Results ({{ marksheets.count }})</h4>
-      {% endif %}
 
-      {% if request.user|has_group:"Student" %}
+      {% if marksheets %} {% if request.user|has_group:"Student" %}
       <h4>Your Result</h4>
       {% endif %}
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Student Name</th>
-            <th>Subject</th>
-            <th>Marks</th>
-            <th>Total</th>
-            <th>Percentage</th>
-            <th>Grade</th>
-            <th>Exam Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for sheet in marksheets %}
-          <tr>
-            <td>
-              {{ sheet.student.user.first_name }}
-              {{sheet.student.user.last_name}}
-            </td>
-            <td>{{ sheet.subject }}</td>
-            <td>{{ sheet.marks }}</td>
-            <td>{{ sheet.total_marks }}</td>
-            <td>{{ sheet.percentage|floatformat:2 }}%</td>
-            <td>{{ sheet.grade }}</td>
-            <td>{{ sheet.exam_date }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% if request.user|has_group:"Teacher" %}
+      <h4>All Students' Results ({{ marksheets.count }})</h4>
+       
+
+      <form method="GET" class="row g-2 mb-4">
+        <div class="col-md-5">
+          <input
+            type="text"
+            name="student_name"
+            class="form-control"
+            placeholder="Search by Student Name"
+            value="{{ request.GET.student_name }}" />
+        </div>
+        <div class="col-md-5">
+          <input
+            type="text"
+            name="reg_num"
+            class="form-control"
+            placeholder="Search by Registration Number"
+            value="{{ request.GET.reg_num }}" />
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+      </form>
+      {% endif %}
+
+      <div
+        class="table-responsive shadow rounded-4 border border-2 p-3 bg-white">
+        <table
+          class="table table-bordered table-striped table-hover table-sm align-middle text-center">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Subject</th>
+              <th>Marks</th>
+              <th>Total</th>
+              <th>Percentage</th>
+              <th>Grade</th>
+              <th>Exam Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sheet in marksheets %}
+            <tr>
+              <td>
+                {{ sheet.student.user.first_name }}
+                {{sheet.student.user.last_name}}
+              </td>
+              <td>{{ sheet.subject }}</td>
+              <td>{{ sheet.marks }}</td>
+              <td>{{ sheet.total_marks }}</td>
+              <td>{{ sheet.percentage|floatformat:2 }}%</td>
+              <td>{{ sheet.grade }}</td>
+              <td>{{ sheet.exam_date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <br />
       {% else %}
       <p class="text-center text-muted">No result data available.</p>
       {% endif %}
+
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="{% url '_home' %}" class="btn btn-secondary">Cancel</a>
+      </div>
     </div>
 
     <!-- Bootstrap JS (optional for alert dismissal) -->

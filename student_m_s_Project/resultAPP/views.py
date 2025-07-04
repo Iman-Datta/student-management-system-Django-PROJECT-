@@ -67,7 +67,6 @@ def result(request: HttpResponse):
         messages.error(request, 'Invalid request method.')
         return redirect('home')
 
-
 @login_required
 def student_result_view(request: HttpResponse):
     user = request.user
