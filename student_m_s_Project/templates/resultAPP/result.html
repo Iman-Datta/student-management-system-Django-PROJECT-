@@ -102,15 +102,11 @@
         </form>
       </div>
       {% endif %}
-
-      <br />
-
+      <br/>
       {% if marksheets %} {% if request.user|has_group:"Student" %}
       <h4>Your Result</h4>
-      {% endif %}
-      {% if request.user|has_group:"Teacher" %}
+      {% endif %} {% if request.user|has_group:"Teacher" %}
       <h4>All Students' Results ({{ marksheets.count }})</h4>
-       
 
       <form method="GET" class="row g-2 mb-4">
         <div class="col-md-5">
@@ -148,34 +144,42 @@
               <th>Percentage</th>
               <th>Grade</th>
               <th>Exam Date</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {% for sheet in marksheets %}
+            {% for marksheet in marksheets %}
             <tr>
               <td>
-                {{ sheet.student.user.first_name }}
-                {{sheet.student.user.last_name}}
+                {{ marksheet.student.user.first_name }} 
+                {{ marksheet.student.user.last_name }}
               </td>
-              <td>{{ sheet.subject }}</td>
-              <td>{{ sheet.marks }}</td>
-              <td>{{ sheet.total_marks }}</td>
-              <td>{{ sheet.percentage|floatformat:2 }}%</td>
-              <td>{{ sheet.grade }}</td>
-              <td>{{ sheet.exam_date }}</td>
+              <td>{{ marksheet.subject }}</td>
+              <td>{{ marksheet.marks }}</td>
+              <td>{{ marksheet.total_marks }}</td>
+              <td>{{ marksheet.percentage|floatformat:2 }}%</td>
+              <td>{{ marksheet.grade }}</td>
+              <td>{{ marksheet.exam_date }}</td>
+              {% if request.user|has_group:"Teacher" %}
+              <td>
+                <a
+                  href="{% url 'edit_result' marksheet.id %}"
+                  class="btn btn-sm btn-outline-primary"
+                  >Edit</a
+                >
+              </td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
         </table>
+        <a href="{% url '_home' %}" class="btn btn-secondary ms-2">Cancel</a>
       </div>
+
       <br />
       {% else %}
       <p class="text-center text-muted">No result data available.</p>
       {% endif %}
-
-      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a href="{% url '_home' %}" class="btn btn-secondary">Cancel</a>
-      </div>
     </div>
 
     <!-- Bootstrap JS (optional for alert dismissal) -->
