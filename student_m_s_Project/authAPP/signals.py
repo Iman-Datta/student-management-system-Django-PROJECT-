@@ -21,11 +21,12 @@ def create_default_groups(sender, **kwargs):
             'view_marksheet'
         ]
     )
+
     teacher_group.permissions.set(teacher_permissions)
 
     # Permission for Student group
-    view_permission, _  = Permission.objects.get_or_create(
+    view_permission, _ = Permission.objects.get_or_create(
         content_type=content_type,
-        codename={'name': 'Can view Marksheet'}
+        codename='view_marksheet',
     )
     student_group.permissions.set([view_permission])
